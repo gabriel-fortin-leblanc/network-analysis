@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "network-analysis"
+version = "0.0.1"
+authors = [
+  { name="Gabriel Fortin-Leblanc", email="gabriel.fortin-leblanc@umontreal.ca" },
+]
+description = "Work in progress..."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/gabriel-fortin-leblanc/network-analysis"
+"Bug Tracker" = "https://github.com/gabriel-fortin-leblanc/network-analysis/issues"
