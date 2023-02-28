@@ -106,12 +106,3 @@ def mutuals(graph):
         if graph.has_edge(v, u):
             count += 1
     return count // 2
-
-
-class Statistics:
-    """Base class for statistics about graphs."""
-
-    def __call__(self, graph):
-        raise NotImplementedError(
-            "The __call__ special method of a statistics must be implemented."
-        )
