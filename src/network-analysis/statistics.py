@@ -3,6 +3,7 @@ networks.
 """
 import networkx as nx
 import numpy as np
+from scipy.special import comb
 
 
 def gwd(graph, decay):
@@ -45,9 +46,7 @@ def gwesp(graph, decay):
 
 
 def kstars(graph, k):
-    """Count the number of k-stars of the undirected graph. If a multigraph is
-    passed as arguement, then multiple edges between two nodes will be
-    considered as one.
+    """Count the number of k-stars of the undirected graph.
 
     :param graph: The graph.
     :type graph: NetworkX undirected graph.
@@ -56,7 +55,8 @@ def kstars(graph, k):
     :return: The number of k-stars the graph contains.
     :rtype: Integer.
     """
-    pass
+    degrees = np.array([d for _, d in graph.degree()])
+    return comb(degrees, k).sum()
 
 
 def in_kstars(graph, k):
@@ -70,7 +70,8 @@ def in_kstars(graph, k):
     :return: The number of in k-stars the graph contains.
     :rtype: Integer.
     """
-    pass
+    degrees = np.array([d for _, d in graph.in_degree()])
+    return comb(degrees, k).sum()
 
 
 def out_kstars(graph, k):
@@ -84,7 +85,8 @@ def out_kstars(graph, k):
     :return: The number of out k-stars the graph contains.
     :rtype: Integer.
     """
-    pass
+    degrees = np.array([d for _, d in graph.out_degree()])
+    return comb(degrees, k).sum()
 
 
 def mutuals(graph):
@@ -99,67 +101,17 @@ def mutuals(graph):
     :return: The number of mutual connections.
     :rtype: Integer.
     """
-    pass
-
-
-def kcycles(graph, k):
-    """Count the number of cycles of length k in the graph.
-
-    :param graph: The graph.
-    :type graph: NetworkX graph.
-    :param k: The length of a cycle.
-    :type k: Integer strictly greater than 1.
-    :return: The number of k-cycles.
-    :rtype: Integer.
-    """
-    pass
-
-
-def transitiveties(graph, k=2):
-    """The number of transitivety connection in the directed graph.
-
-    :param graph: The graph.
-    :type graph: NetworkX directed graph.
-    :param k: The maximal length of the transitity connection.
-    :type k: Integer strictly greater than 1.
-    :return: The number of transitivety connections.
-    :rtype: Integer.
-    """
-    pass
-
-
-def diam(graph):
-    """The diameter of the graph.
-
-    :param graph: The graph.
-    :type graph: NetworkX graph.
-    :return: The diameter of the graph.
-    :rtype: Integer.
-    """
-    pass
-
-
-def treewidth(graph):
-    """The treewidth of the graph.
-
-    :param graph: The graph.
-    :type graph: NetworkX graph.
-    :return: The treewidth of the graph.
-    :rtype: Integer.
-    """
-    pass
-
-
-def components(graph):
-    """The number of connected components in the graph.
-
-    :param graph: The graph.
-    :type graph: NetworkX graph.
-    :return: The number of connected components.
-    :rtype: Integer.
-    """
-    pass
+    count = 0
+    for u, v in graph.edges():
+        if graph.has_edge(v, u):
+            count += 1
+    return count // 2
 
 
 class Statistics:
-    pass
+    """Base class for statistics about graphs."""
+
+    def __call__(self, graph):
+        raise NotImplementedError(
+            "The __call__ special method of a statistics must be implemented."
+        )
