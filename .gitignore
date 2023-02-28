@@ -1,2 +1,3 @@
 dist/
 src/network_analysis.egg-info/
+*/__pycache__/
