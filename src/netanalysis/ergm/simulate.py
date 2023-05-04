@@ -11,7 +11,7 @@ def simulate(
     ngraphs,
     param,
     stats_comp,
-    init=None,
+    init,
     burnin=None,
 ):
     """Simulate ngraphs graphs with respect to the param and the sufficient
@@ -23,13 +23,13 @@ def simulate(
     :type param: Numpy array.
     :param stats_comp: The sufficient statistics computer.
     :type stats_comp: A callable object.
-    :param init: The initial graph to start the chain. If none is given, then a random graph will be used., defaults to None
+    :param init: The initial graph to start the chain, or the number of nodes.
     :type init: NetworkX graph., optional
     :param burnin: The number of graphs to burn. If none is given, then no graphs will be burned., defaults to None
     :type burnin: _type_, optional
     """
-    if init is None:
-        peek = nx.random_graphs.binomial_graph(len(param), 0.5)
+    if type(init) is int:
+        peek = nx.random_graphs.binomial_graph(init, 0.5)
     else:
         peek = init.copy()
     peek_stats = stats_comp(peek)
