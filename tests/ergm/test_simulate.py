@@ -1,7 +1,7 @@
 import networkx as nx
 
-from netanalysis.ergm.simulate import *
-from netanalysis.statistics import *
+from networkanalysis.ergm.simulate import *
+from networkanalysis.statistics import *
 
 
 def test_simulate():
