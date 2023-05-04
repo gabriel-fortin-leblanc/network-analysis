@@ -1,7 +1,7 @@
 import networkx as nx
 from pytest import approx
 
-from netanalysis.statistics import *
+from networkanalysis.statistics import *
 
 # Create undirected graphs.
 path = nx.path_graph(4)
