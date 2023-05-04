@@ -52,6 +52,8 @@ def simulate(
         )
         graphs.append(peek)
 
+    return graphs
+
 
 def _next_state(peek, peek_stats, stats_comp, param, nodes):
     u, v = random.sample(nodes, 2)
@@ -71,3 +73,4 @@ def _next_state(peek, peek_stats, stats_comp, param, nodes):
             peek.add_edge(u, v)
         else:
             peek.remove_edge(u, v)
+    return peek, peek_stats
