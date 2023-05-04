@@ -1,6 +1,8 @@
 """This module contains classes and functions to compute statistics on
 networks.
 """
+from typing import Any
+
 import networkx as nx
 import numpy as np
 from scipy.special import comb
@@ -108,3 +110,86 @@ def mutuals(graph):
     if not nx.is_directed(graph):
         count_edges /= 2
     return (count_edges > 1).sum()
+
+
+class NEdges:
+    """Dummy callable object that mimics number_of_edges of NetworkX."""
+
+    def __call__(self, graph):
+        return graph.number_of_edges()
+
+
+class GWD:
+    """Dummy callable object that mimics gwd."""
+
+    def __init__(self, decay):
+        self._decay = decay
+
+    def __call__(self, graph):
+        return gwd(graph, self._decay)
+
+
+class GWESP:
+    """Dummy callable object that mimics gwesp."""
+
+    def __init__(self, decay):
+        self._decay = decay
+
+    def __call__(self, graph):
+        return gwesp(graph, self._decay)
+
+
+class KStars:
+    """Dummy callable object that mimics kstars."""
+
+    def __init__(self, k):
+        self._k = k
+
+    def __call__(self, graph):
+        return kstars(graph, self._k)
+
+
+class InKStars:
+    """Dummy callable object that mimics in_kstars."""
+
+    def __init__(self, k):
+        self._k = k
+
+    def __call__(self, graph):
+        return in_kstars(graph, self._k)
+
+
+class OutKStars:
+    """Dummy callable object that mimics out_kstars."""
+
+    def __init__(self, k):
+        self._k = k
+
+    def __call__(self, graph):
+        return out_kstars(graph, self._k)
+
+
+class Mutuals:
+    """Dummy callable object that mimics mutuals."""
+
+    def __call__(self, graph):
+        return mutuals(graph)
+
+
+def stats_transform(stats):
+    """Transform the list of statistics into one function that computes the
+    vector of statistics from the list.
+
+    :param stats: List of callable object that takes a NetworkX graph as argument.
+    :type stats: List.
+    """
+
+    def stats_comp(graph):
+        graph_stats = np.empty(
+            (len(stats)),
+        )
+        for i, stat in enumerate(stats):
+            graph_stats[i] = stat(graph)
+        return graph_stats
+
+    return stats_comp
