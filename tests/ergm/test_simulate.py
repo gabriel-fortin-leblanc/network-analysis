@@ -20,12 +20,16 @@ def test_simulate():
     graphs = simulate(ngraphs0, param0, stats_comp0, n)
     assert len(graphs) == ngraphs0
     assert np.all([type(graph) is nx.Graph for graph in graphs])
+    assert graphs[0] != graphs[-1]
     graphs = simulate(ngraphs0, param0, stats_comp0, path, burnin)
     assert len(graphs) == ngraphs0
     assert np.all([type(graph) is nx.Graph for graph in graphs])
+    assert graphs[0] != graphs[-1]
     graphs = simulate(ngraphs1, param1, stats_comp1, n)
     assert len(graphs) == ngraphs1
     assert np.all([type(graph) is nx.Graph for graph in graphs])
+    assert graphs[0] != graphs[-1]
     graphs = simulate(ngraphs1, param1, stats_comp1, path, burnin)
     assert len(graphs) == ngraphs1
     assert np.all([type(graph) is nx.Graph for graph in graphs])
+    assert graphs[0] != graphs[-1]

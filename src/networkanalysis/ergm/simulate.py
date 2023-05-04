@@ -25,7 +25,8 @@ def simulate(
     :type stats_comp: A callable object.
     :param init: The initial graph to start the chain, or the number of nodes.
     :type init: NetworkX graph., optional
-    :param burnin: The number of graphs to burn. If none is given, then no graphs will be burned., defaults to None
+    :param burnin: The number of graphs to burn. If none is given, then no
+    graphs will be burned., defaults to None
     :type burnin: _type_, optional
     """
     if type(init) is int:
@@ -50,7 +51,7 @@ def simulate(
         peek, peek_stats = _next_state(
             peek, peek_stats, stats_comp, param, nodes
         )
-        graphs.append(peek)
+        graphs.append(peek.copy())
 
     return graphs
 
