@@ -34,3 +34,8 @@ def test_simulate():
     assert len(graphs) == ngraphs1
     assert np.all([type(graph) is nx.Graph for graph in graphs])
     assert graphs[0] != graphs[-1]
+    graphs, summary = simulate(
+        ngraphs1, param1, stats_comp1, path, burnin, thin, True
+    )
+    assert type(summary["rate"]) is float
+    assert 0 <= summary["rate"] and summary["rate"] <= 1
