@@ -16,12 +16,13 @@ def test_simulate():
     path = nx.path_graph(4)
     n = 50
     burnin = 1000
+    thin = 3
 
     graphs = simulate(ngraphs0, param0, stats_comp0, n)
     assert len(graphs) == ngraphs0
     assert np.all([type(graph) is nx.Graph for graph in graphs])
     assert graphs[0] != graphs[-1]
-    graphs = simulate(ngraphs0, param0, stats_comp0, path, burnin)
+    graphs = simulate(ngraphs0, param0, stats_comp0, path, burnin, thin)
     assert len(graphs) == ngraphs0
     assert np.all([type(graph) is nx.Graph for graph in graphs])
     assert graphs[0] != graphs[-1]
@@ -29,7 +30,7 @@ def test_simulate():
     assert len(graphs) == ngraphs1
     assert np.all([type(graph) is nx.Graph for graph in graphs])
     assert graphs[0] != graphs[-1]
-    graphs = simulate(ngraphs1, param1, stats_comp1, path, burnin)
+    graphs = simulate(ngraphs1, param1, stats_comp1, path, burnin, thin)
     assert len(graphs) == ngraphs1
     assert np.all([type(graph) is nx.Graph for graph in graphs])
     assert graphs[0] != graphs[-1]

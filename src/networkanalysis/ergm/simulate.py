@@ -7,13 +7,7 @@ import networkx as nx
 import numpy as np
 
 
-def simulate(
-    ngraphs,
-    param,
-    stats_comp,
-    init,
-    burnin=None,
-):
+def simulate(ngraphs, param, stats_comp, init, burnin=None, thin=None):
     """Simulate ngraphs graphs with respect to the param and the sufficient
     statistics.
 
@@ -27,7 +21,9 @@ def simulate(
     :type init: NetworkX graph., optional
     :param burnin: The number of graphs to burn. If none is given, then no
     graphs will be burned., defaults to None
-    :type burnin: _type_, optional
+    :type burnin: int, optional
+    :param thin: The thinning factor. By default, None is given.
+    :type thin: int, optional
     """
     if type(init) is int:
         peek = nx.random_graphs.binomial_graph(init, 0.5)
@@ -38,6 +34,9 @@ def simulate(
     if burnin is None:
         burnin = 0
 
+    if thin is None:
+        thin = 1
+
     nodes = list(peek.nodes())
 
     # Burnin phase
@@ -47,13 +46,13 @@ def simulate(
         )
 
     graphs = list()
-    for _ in range(ngraphs):
+    for _ in range(ngraphs * thin):
         peek, peek_stats = _next_state(
             peek, peek_stats, stats_comp, param, nodes
         )
         graphs.append(peek.copy())
 
-    return graphs
+    return graphs[::thin]
 
 
 def _next_state(peek, peek_stats, stats_comp, param, nodes):
