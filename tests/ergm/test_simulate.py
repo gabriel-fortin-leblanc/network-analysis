@@ -1,4 +1,5 @@
 import networkx as nx
+import pytest
 
 from networkanalysis.ergm.simulate import *
 from networkanalysis.statistics import *
@@ -11,6 +12,7 @@ def test_simulate():
     ngraphs1 = 1000
     param0 = np.array([-1, 0.2, 0.5])
     param1 = np.array([-1, 1])
+    param2 = np.array([1000, 0])
     stats_comp0 = stats_transform([NEdges(), GWD(decay), KStars(k)])
     stats_comp1 = stats_transform([NEdges(), Mutuals()])
     path = nx.path_graph(4)
@@ -39,3 +41,6 @@ def test_simulate():
     )
     assert type(summary["rate"]) is float
     assert 0 <= summary["rate"] and summary["rate"] <= 1
+
+    with pytest.warns(RuntimeWarning):
+        graphs = simulate(ngraphs1, param2, stats_comp1, 10, warn=10)

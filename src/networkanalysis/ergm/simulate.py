@@ -2,13 +2,21 @@
 models.
 """
 import random
+import warnings
 
 import networkx as nx
 import numpy as np
 
 
 def simulate(
-    ngraphs, param, stats_comp, init, burnin=None, thin=None, summary=False
+    ngraphs,
+    param,
+    stats_comp,
+    init,
+    burnin=None,
+    thin=None,
+    summary=False,
+    warn=None,
 ):
     """Simulate ngraphs graphs with respect to the param and the sufficient
     statistics.
@@ -29,6 +37,9 @@ def simulate(
     :param summary: A flag for requesting to collect information about the
     chain such as the acceptance rate. By default, False is given.
     :type summary: Boolean.
+    :param warn: If an integer passed, then a warning is thrown if the
+    graphs are near-empty or near-complete for this number of interation.
+    :type warn: An integer, optional.
     """
     if type(init) is int:
         peek = nx.random_graphs.binomial_graph(init, 0.5)
@@ -48,6 +59,11 @@ def simulate(
     if summary:
         naccepted = 0
 
+    if warn is not None:
+        ndeg = 0
+        n = peek.number_of_nodes()
+        ndyadslim = n * (n - 1) / 2 - 1
+
     # Burnin phase
     for _ in range(burnin):
         current = _next_state(
@@ -55,6 +71,19 @@ def simulate(
         )
         if summary:
             naccepted += current[2]
+        if warn is not None:
+            if (
+                current[0].number_of_edges() <= 1
+                or current[0].number_of_edges() >= ndyadslim
+            ):
+                ndeg += 1
+            else:
+                ndeg = 0
+            if ndeg >= warn:
+                warnings.warn(
+                    message="The graph states are near-degenerated.",
+                    category=RuntimeWarning,
+                )
 
     graphs = list()
     for _ in range(ngraphs * thin):
@@ -64,6 +93,22 @@ def simulate(
         graphs.append(current[0].copy())
         if summary:
             naccepted += current[2]
+
+        if warn is not None:
+            print(current[0].number_of_edges())
+            print(ndyadslim)
+            if (
+                current[0].number_of_edges() <= 1
+                or current[0].number_of_edges() >= ndyadslim
+            ):
+                ndeg += 1
+            else:
+                ndeg = 0
+            if ndeg >= warn:
+                warnings.warn(
+                    message="The graph states are near-degenerated.",
+                    category=RuntimeWarning,
+                )
 
     graphs = graphs[::thin]
     if summary:
