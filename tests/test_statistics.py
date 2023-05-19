@@ -1,4 +1,5 @@
 import networkx as nx
+import pytest
 from pytest import approx
 
 from networkanalysis.statistics import *
@@ -32,20 +33,28 @@ mdcustom = nx.MultiDiGraph()
 mdcustom.add_edges_from([(0, 2), (0, 3), (1, 0), (1, 2), (2, 1)])
 
 
-def test_gwd():
+class TestGWD:
+    # Decay factors
     decay0 = 0.5
     decay1 = 2
 
-    assert gwd(path, decay0) == approx(4.786938)
-    assert gwd(path, decay1) == approx(5.729329)
-    assert gwd(cycle, decay0) == approx(6.967346)
-    assert gwd(cycle, decay1) == approx(9.323323)
-    assert gwd(complete, decay0) == approx(6.193149)
-    assert gwd(complete, decay1) == approx(10.449239)
-    assert gwd(bi_complete, decay0) == approx(7.276982)
-    assert gwd(bi_complete, decay1) == approx(10.818613)
-    assert gwd(custom, decay0) == approx(8.337899)
-    assert gwd(custom, decay1) == approx(12.465076)
+    @pytest.mark.parametrize(
+        "graph, decay, expected",
+        [
+            (path, decay0, approx(4.786938)),
+            (path, decay1, approx(5.729329)),
+            (cycle, decay0, approx(6.967346)),
+            (cycle, decay1, approx(9.323323)),
+            (complete, decay0, approx(6.193149)),
+            (complete, decay1, approx(10.449239)),
+            (bi_complete, decay0, approx(7.276982)),
+            (bi_complete, decay1, approx(10.818613)),
+            (custom, decay0, approx(8.337899)),
+            (custom, decay1, approx(12.465076)),
+        ],
+    )
+    def test_gwd(self, graph, decay, expected, benchmark):
+        assert benchmark(gwd, graph, decay) == expected
 
 
 def test_gwesp():
