@@ -57,80 +57,130 @@ class TestGWD:
         assert benchmark(gwd, graph, decay) == expected
 
 
-def test_gwesp():
+class TestGWESP:
+    # Decay factors
     decay0 = 0.5
     decay1 = 2
 
-    assert gwesp(path, decay0) == approx(0.0)
-    assert gwesp(path, decay1) == approx(0.0)
-    assert gwesp(cycle, decay0) == approx(0.0)
-    assert gwesp(cycle, decay1) == approx(0.0)
-    assert gwesp(complete, decay0) == approx(8.360816)
-    assert gwesp(complete, decay1) == approx(11.187988)
-    assert gwesp(bi_complete, decay0) == approx(0.0)
-    assert gwesp(bi_complete, decay1) == approx(0.0)
-    assert gwesp(custom, decay0) == approx(6.0)
-    assert gwesp(custom, decay1) == approx(6.0)
+    @pytest.mark.parametrize(
+        "graph, decay, expected",
+        [
+            (path, decay0, approx(0.0)),
+            (path, decay1, approx(0.0)),
+            (cycle, decay0, approx(0.0)),
+            (cycle, decay1, approx(0.0)),
+            (complete, decay0, approx(8.360816)),
+            (complete, decay1, approx(11.187988)),
+            (bi_complete, decay0, approx(0.0)),
+            (bi_complete, decay1, approx(0.0)),
+            (custom, decay0, approx(6.0)),
+            (custom, decay1, approx(6.0)),
+        ],
+    )
+    def test_gwesp(self, graph, decay, expected, benchmark):
+        assert benchmark(gwesp, graph, decay) == expected
 
 
-def test_kstars():
+class TestKStars:
+    # K factors
     k0 = 2
     k1 = 3
 
-    assert kstars(path, k0) == 2
-    assert kstars(path, k1) == 0
-    assert kstars(cycle, k0) == 5
-    assert kstars(cycle, k1) == 0
-    assert kstars(complete, k0) == 12
-    assert kstars(complete, k1) == 4
-    assert kstars(bi_complete, k0) == 9
-    assert kstars(bi_complete, k1) == 2
-    assert kstars(custom, k0) == 12
-    assert kstars(custom, k1) == 5
+    @pytest.mark.parametrize(
+        "graph, k, expected",
+        [
+            (path, k0, 2),
+            (path, k1, 0),
+            (cycle, k0, 5),
+            (cycle, k1, 0),
+            (complete, k0, 12),
+            (complete, k1, 4),
+            (bi_complete, k0, 9),
+            (bi_complete, k1, 2),
+            (custom, k0, 12),
+            (custom, k1, 5),
+        ],
+    )
+    def test_kstars(self, graph, k, expected, benchmark):
+        assert benchmark(kstars, graph, k) == expected
 
 
-def test_in_kstars():
+class TestKInStars:
+    # K factors
     k0 = 2
     k1 = 3
 
-    assert in_kstars(dpath, k0) == 1
-    assert in_kstars(dpath, k1) == 0
-    assert in_kstars(din_star, k0) == 10
-    assert in_kstars(din_star, k1) == 10
-    assert in_kstars(dout_star, k0) == 0
-    assert in_kstars(dout_star, k1) == 0
+    @pytest.mark.parametrize(
+        "graph, k, expected",
+        [
+            (dpath, k0, 1),
+            (dpath, k1, 0),
+            (din_star, k0, 10),
+            (din_star, k1, 10),
+            (dout_star, k0, 0),
+            (dout_star, k1, 0),
+        ],
+    )
+    def test_in_kstars(self, graph, k, expected, benchmark):
+        assert benchmark(in_kstars, graph, k) == expected
 
 
-def test_out_kstars():
+class TestKOutStars:
+    # K factors
     k0 = 2
     k1 = 3
 
-    assert out_kstars(dpath, k0) == 0
-    assert out_kstars(dpath, k1) == 0
-    assert out_kstars(din_star, k0) == 0
-    assert out_kstars(din_star, k1) == 0
-    assert out_kstars(dout_star, k0) == 10
-    assert out_kstars(dout_star, k1) == 10
+    @pytest.mark.parametrize(
+        "graph, k, expected",
+        [
+            (dpath, k0, 0),
+            (dpath, k1, 0),
+            (din_star, k0, 0),
+            (din_star, k1, 0),
+            (dout_star, k0, 10),
+            (dout_star, k1, 10),
+        ],
+    )
+    def test_out_kstars(self, graph, k, expected, benchmark):
+        assert benchmark(out_kstars, graph, k) == expected
 
 
-def test_mutuals():
-    assert mutuals(mcustom) == 2
-    assert mutuals(mdcustom) == 1
+class TestMutuals:
+    @pytest.mark.parametrize("graph, expected", [(mcustom, 2), (mdcustom, 1)])
+    def test_mutuals(self, graph, expected, benchmark):
+        assert benchmark(mutuals, graph) == expected
 
 
-def test_stats_transform():
+class TestStatsTransform:
+    # Factors
     decay = 0.5
     k0 = 2
     k1 = 3
 
-    stats_comp = stats_transform([NEdges(), GWD(decay), KStars(k0)])
-    np.testing.assert_almost_equal(
-        stats_comp(path), np.array([3, 4.786938, 2]), 5
+    @pytest.mark.parametrize(
+        "stats_comp, graph, expected",
+        [
+            (
+                stats_transform([NEdges(), GWD(decay), KStars(k0)]),
+                path,
+                np.array([3, 4.786938, 2]),
+            ),
+            (
+                stats_transform([NEdges(), GWD(decay), KStars(k0)]),
+                custom,
+                np.array([7, 8.337899, 12]),
+            ),
+            (
+                stats_transform([InKStars(k0), OutKStars(k1)]),
+                dpath,
+                np.array([1, 0]),
+            ),
+            (
+                stats_transform([InKStars(k0), OutKStars(k1)]),
+                din_star,
+                np.array([10, 0]),
+            ),
+        ],
     )
-    np.testing.assert_almost_equal(
-        stats_comp(custom), np.array([7, 8.337899, 12]), 5
-    )
-
-    stats_comp = stats_transform([InKStars(k0), OutKStars(k1)])
-    np.testing.assert_almost_equal(stats_comp(dpath), np.array([1, 0]))
-    np.testing.assert_almost_equal(stats_comp(din_star), np.array([10, 0]))
+    def test_stats_transform(self, stats_comp, graph, expected):
+        np.testing.assert_almost_equal(stats_comp(graph), expected, 5)
