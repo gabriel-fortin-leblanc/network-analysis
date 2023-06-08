@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "network-analysis"
-version = "0.0.1.1"
+version = "0.0.1.2"
 authors = [
   { name="Gabriel Fortin-Leblanc", email="gabriel.fortin-leblanc@umontreal.ca" },
 ]
