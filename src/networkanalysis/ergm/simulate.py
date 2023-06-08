@@ -7,6 +7,8 @@ import warnings
 import networkx as nx
 import numpy as np
 
+from ..statistics import CachedStatsComp
+
 
 def simulate(
     ngraphs,
@@ -17,6 +19,7 @@ def simulate(
     thin=None,
     summary=False,
     warn=None,
+    return_cache=False,
 ):
     """Simulate ngraphs graphs with respect to the param and the sufficient
     statistics.
@@ -30,17 +33,19 @@ def simulate(
     :param init: The initial graph to start the chain, or the number of nodes.
     :type init: NetworkX graph., optional
     :param burnin: The number of graphs to burn. If none is given, then no
-    graphs will be burned., defaults to None
+        graphs will be burned., defaults to None
     :type burnin: int, optional
     :param thin: The thinning factor. By default, None is given.
     :type thin: int, optional.
     :param summary: A flag for requesting to collect information about the
-    chain such as the acceptance rate. By default, False is given.
+        chain such as the acceptance rate. By default, False is given.
     :type summary: Boolean.
     :param warn: If an integer passed, then a warning is thrown if the
-    graphs are near-empty or near-complete for this number of interation.
+        graphs are near-empty or near-complete for this number of interation.
     :type warn: An integer, optional.
     """
+    stats_comp = CachedStatsComp(stats_comp)
+
     if type(init) is int:
         peek = nx.random_graphs.binomial_graph(init, 0.5)
     else:
@@ -110,10 +115,15 @@ def simulate(
                     category=RuntimeWarning,
                 )
 
-    graphs = graphs[::thin]
+    # Return phase
+    return_objects = [graphs[::thin]]
     if summary:
-        return graphs, {"rate": naccepted / (ngraphs * thin + burnin)}
-    return graphs
+        return_objects.append({"rate": naccepted / (ngraphs * thin + burnin)})
+    if return_cache:
+        return_objects.append(stats_comp)
+    return (
+        tuple(return_objects) if len(return_objects) > 1 else return_objects[0]
+    )
 
 
 def _next_state(peek, peek_stats, stats_comp, param, nodes, summary=False):

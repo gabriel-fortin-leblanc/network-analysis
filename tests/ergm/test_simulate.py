@@ -1,3 +1,5 @@
+import random
+
 import networkx as nx
 import pytest
 
@@ -13,10 +15,11 @@ class TestSimulate:
     param0 = np.array([-1, 0.2, 0.5])
     param1 = np.array([-1, 1])
     param2 = np.array([1000, 0])
-    stats_comp0 = stats_transform([NEdges(), GWD(decay), KStars(k)])
-    stats_comp1 = stats_transform([NEdges(), Mutuals()])
+    stats_comp0 = StatsComp([NEdges(), GWD(decay), KStars(k)])
+    stats_comp1 = StatsComp([NEdges(), Mutuals()])
     path = nx.path_graph(4)
     simple = nx.random_graphs.fast_gnp_random_graph(5, 0.5)
+    complete = nx.complete_graph(4)
     n = 50
     burnin0 = 1000
     burnin1 = 0
@@ -114,7 +117,7 @@ class TestSimulate:
     @pytest.mark.parametrize(
         "ngraphs, param, stats_comp, n, w",
         [
-            (ngraphs1, param2, stats_comp1, 10, 10),
+            (ngraphs1, param2, stats_comp1, complete, 1),
         ],
     )
     def test_simulate_degenerate_warning(
