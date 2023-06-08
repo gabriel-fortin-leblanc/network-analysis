@@ -106,7 +106,6 @@ def mutuals(graph):
     :rtype: Integer.
     """
     adj = nx.to_numpy_array(graph)
-    print(adj)
     upper_diag_idx = np.triu_indices(adj.shape[0], 1)
     count_edges = adj[upper_diag_idx] + adj.T[upper_diag_idx]
     if not nx.is_directed(graph):

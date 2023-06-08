@@ -15,8 +15,8 @@ def simulate(
     param,
     stats_comp,
     init,
-    burnin=None,
-    thin=None,
+    burnin=0,
+    thin=1,
     summary=False,
     warn=None,
     return_cache=False,
@@ -51,15 +51,7 @@ def simulate(
     else:
         peek = init.copy()
     peek_stats = stats_comp(peek)
-
     nodes = list(peek.nodes())
-    current = (peek, peek_stats)
-
-    if burnin is None:
-        burnin = 0
-
-    if thin is None:
-        thin = 1
 
     if summary:
         naccepted = 0
@@ -69,86 +61,54 @@ def simulate(
         n = peek.number_of_nodes()
         ndyadslim = n * (n - 1) / 2 - 1
 
-    # Burnin phase
-    for _ in range(burnin):
-        current = _next_state(
-            current[0], current[1], stats_comp, param, nodes, summary
-        )
-        if summary:
-            naccepted += current[2]
-        if warn is not None:
-            if (
-                current[0].number_of_edges() <= 1
-                or current[0].number_of_edges() >= ndyadslim
-            ):
-                ndeg += 1
+    nits = burnin + thin * ngraphs
+    logunifs = np.log(np.random.uniform(size=nits))
+    graphs = [None] * nits
+
+    for i in range(nits):
+        u, v = random.sample(nodes, 2)
+        in_graph = peek.has_edge(u, v)
+
+        if in_graph:
+            peek.remove_edge(u, v)
+        else:
+            peek.add_edge(u, v)
+        temp_stats = stats_comp(peek)
+
+        if logunifs[i] < param @ (temp_stats - peek_stats):  # Accept the state
+            peek_stats = temp_stats
+            if summary:
+                naccepted += 1
+        else:  # Refuse the state.
+            # Return to the previous graph.
+            if in_graph:
+                peek.add_edge(u, v)
             else:
-                ndeg = 0
+                peek.remove_edge(u, v)
+
+        if warn is not None:
+            ndeg = (
+                ndeg + 1
+                if (
+                    peek.number_of_edges() <= 1
+                    or peek.number_of_edges() >= ndyadslim
+                )
+                else 0
+            )
             if ndeg >= warn:
                 warnings.warn(
                     message="The graph states are near-degenerated.",
                     category=RuntimeWarning,
                 )
 
-    graphs = list()
-    for _ in range(ngraphs * thin):
-        current = _next_state(
-            current[0], current[1], stats_comp, param, nodes, summary
-        )
-        graphs.append(current[0].copy())
-        if summary:
-            naccepted += current[2]
-
-        if warn is not None:
-            print(current[0].number_of_edges())
-            print(ndyadslim)
-            if (
-                current[0].number_of_edges() <= 1
-                or current[0].number_of_edges() >= ndyadslim
-            ):
-                ndeg += 1
-            else:
-                ndeg = 0
-            if ndeg >= warn:
-                warnings.warn(
-                    message="The graph states are near-degenerated.",
-                    category=RuntimeWarning,
-                )
+        graphs[i] = peek.copy()
 
     # Return phase
-    return_objects = [graphs[::thin]]
+    return_objects = [graphs[burnin::thin]]
     if summary:
-        return_objects.append({"rate": naccepted / (ngraphs * thin + burnin)})
+        return_objects.append({"rate": naccepted / nits})
     if return_cache:
         return_objects.append(stats_comp)
     return (
         tuple(return_objects) if len(return_objects) > 1 else return_objects[0]
     )
-
-
-def _next_state(peek, peek_stats, stats_comp, param, nodes, summary=False):
-    u, v = random.sample(nodes, 2)
-    in_graph = peek.has_edge(u, v)
-
-    if in_graph:
-        peek.remove_edge(u, v)
-    else:
-        peek.add_edge(u, v)
-    temp_stats = stats_comp(peek)
-
-    lunif = np.log(random.random())
-    if lunif < param @ (temp_stats - peek_stats):  # Accept the state
-        if summary:
-            accept = 1
-        peek_stats = temp_stats
-    else:  # Refuse the state
-        if summary:
-            accept = 0
-        if in_graph:
-            peek.add_edge(u, v)
-        else:
-            peek.remove_edge(u, v)
-
-    if summary:
-        return peek, peek_stats, accept
-    return peek, peek_stats
