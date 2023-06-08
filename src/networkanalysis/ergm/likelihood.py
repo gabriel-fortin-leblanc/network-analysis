@@ -3,6 +3,9 @@ or other version of it, like the maximum pseudolikelihood estimator."""
 import itertools
 
 import numpy as np
+from sklearn.linear_model import LogisticRegression
+
+__all__ = ["mple"]
 
 
 def mple(graph, stats_comp):
@@ -26,14 +29,7 @@ def mple(graph, stats_comp):
         X.append(stat1 - stat0)
     X = np.array(X)
     y = np.array(y)
-
-
-def _bernGLM_minusll_jac(param, X, y):
-    return -X.T @ (y - (1 + np.exp(-X @ param)) ^ -1)
-
-
-def _bernGLM_minusll_hess(param, X, y):
-    XB = X @ param
-    return (
-        (((1 + np.exp(-XB)) * (1 + np.exp(XB))) ^ -1)[:, np.newaxis] * X
-    ).T @ X
+    params = (
+        LogisticRegression(penalty=None, fit_intercept=False).fit(X, y).coef_
+    )
+    return params

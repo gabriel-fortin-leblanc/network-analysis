@@ -7,6 +7,8 @@ import warnings
 import networkx as nx
 import numpy as np
 
+__all__ = ["simulate"]
+
 
 def simulate(
     ngraphs,
