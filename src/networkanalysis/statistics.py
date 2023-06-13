@@ -223,8 +223,9 @@ class CachedStatsComp(StatsComp):
         self._max_size = max_size
 
     def __call__(self, graph):
-        if graph in self._cache:
-            return self._cache[graph]
+        h = nx.weisfeiler_lehman_graph_hash(graph)
+        if h in self._cache:
+            return self._cache[h]
 
         if len(self._cache) >= self._max_size:
             self._cache.popitem()
