@@ -7,8 +7,6 @@ import warnings
 import networkx as nx
 import numpy as np
 
-from ..statistics import CachedStatsComp
-
 
 def simulate(
     ngraphs,
@@ -19,7 +17,7 @@ def simulate(
     thin=1,
     summary=False,
     warn=None,
-    return_cache=False,
+    return_statscomp=False,
 ):
     """Simulate ngraphs graphs with respect to the param and the sufficient
     statistics.
@@ -106,7 +104,7 @@ def simulate(
     return_objects = [graphs[burnin::thin]]
     if summary:
         return_objects.append({"rate": naccepted / nits})
-    if return_cache:
+    if return_statscomp:
         return_objects.append(stats_comp)
     return (
         tuple(return_objects) if len(return_objects) > 1 else return_objects[0]
