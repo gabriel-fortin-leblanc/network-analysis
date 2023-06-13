@@ -44,7 +44,6 @@ def simulate(
         graphs are near-empty or near-complete for this number of interation.
     :type warn: An integer, optional.
     """
-    stats_comp = CachedStatsComp(stats_comp)
 
     if type(init) is int:
         peek = nx.random_graphs.binomial_graph(init, 0.5)
