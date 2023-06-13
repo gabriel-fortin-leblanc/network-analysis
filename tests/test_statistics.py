@@ -184,3 +184,44 @@ class TestStatsTransform:
     )
     def test_stats_transform(self, stats_comp, graph, expected):
         np.testing.assert_almost_equal(stats_comp(graph), expected, 5)
+
+
+class TestCachedStatsComp:
+    # Factors
+    decay = 0.5
+    k0 = 2
+    k1 = 3
+
+    @pytest.mark.parametrize(
+        "stats_comp, graph, expected",
+        [
+            (
+                CachedStatsComp([NEdges(), GWD(decay), KStars(k0)], 2),
+                path,
+                np.array([3, 4.786938, 2]),
+            ),
+            (
+                CachedStatsComp([NEdges(), GWD(decay), KStars(k0)], 2),
+                custom,
+                np.array([7, 8.337899, 12]),
+            ),
+            (
+                CachedStatsComp([InKStars(k0), OutKStars(k1)], 2),
+                dpath,
+                np.array([1, 0]),
+            ),
+            (
+                CachedStatsComp([InKStars(k0), OutKStars(k1)], 2),
+                din_star,
+                np.array([10, 0]),
+            ),
+        ],
+    )
+    def test_stats_transform(self, stats_comp, graph, expected):
+        stats_comp(graph)
+        stats_comp(
+            nx.gn_graph(10)
+            if nx.is_directed(graph)
+            else nx.fast_gnp_random_graph(10, 0.5)
+        )
+        np.testing.assert_almost_equal(stats_comp(graph), expected, 5)
