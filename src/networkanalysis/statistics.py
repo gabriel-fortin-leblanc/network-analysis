@@ -1,9 +1,7 @@
 """This module contains classes and functions to compute statistics on
 networks.
 """
-import copy
 from collections import OrderedDict
-from typing import Any
 
 import networkx as nx
 import numpy as np
@@ -186,6 +184,7 @@ def stats_transform(stats):
     :type stats: List.
     """
 
+    # Build the function that computes the vector of statistics from the list.
     def stats_comp(graph):
         graph_stats = np.empty(
             (len(stats)),
@@ -198,7 +197,17 @@ def stats_transform(stats):
 
 
 class StatsComp:
+    """Callable object that computes a vector of statistics from a graph.
+    StatsComp can be understand as "Statistics Computer".
+    """
+
     def __init__(self, stats):
+        """Initialize the StatsComp object.
+
+        :param stats: List of callable object that takes a NetworkX graph as
+            argument. It also accepts another StatsComp object and copy it.
+        :type stats: List of callable object or StatsComp object.
+        """
         if isinstance(stats, StatsComp):
             self._func = stats._func
             self._len = stats._len
@@ -214,7 +223,19 @@ class StatsComp:
 
 
 class CachedStatsComp(StatsComp):
+    """StatsComp that caches the computed statistics."""
+
     def __init__(self, stats, max_size=10000):
+        """Initialize the CachedStatsComp object.
+
+        :param stats: List of callable object that takes a NetworkX graph as
+            argument. It also accepts another StatsComp object or even a
+            CachedStatsComp object and copy it.
+        :type stats: List of callable object, StatsComp object or
+            CachedStatsComp object.
+        :param max_size: Maximum number of graphs to cache.
+        :type max_size: Integer.
+        """
         super().__init__(stats)
 
         self._cache = OrderedDict()
