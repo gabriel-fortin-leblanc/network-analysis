@@ -27,7 +27,7 @@ custom.add_edges_from(
 )
 random.seed(1234)
 np.random.seed(1234)
-rg = nx.erdos_renyi_graph(20, 0.4)
+rg0 = nx.erdos_renyi_graph(20, 0.4)
 
 # Create models.
 decay = 0.5
@@ -73,10 +73,27 @@ class TestML:
     @pytest.mark.parametrize(
         "graph, stats_comp, init",
         [
-            (rg, stats_comp0, mpl(rg, stats_comp0)),
+            (rg0, stats_comp0, mpl(rg0, stats_comp0)),
         ],
     )
     def test_ml(self, graph, stats_comp, init, benchmark):
         res = benchmark(ml, graph, stats_comp, init)
         assert type(res) is np.ndarray
         assert res.shape == (len(stats_comp),)
+
+
+class TestAPL:
+    rg0_mple = mpl(rg0, stats_comp0)
+    rg0_mle = ml(rg0, stats_comp0, rg0_mple)
+
+    @pytest.mark.parametrize(
+        "mple, mle, stats_comp, graph",
+        [
+            (rg0_mple, rg0_mle, stats_comp0, rg0),
+        ],
+    )
+    def test_apl(self, mple, mle, stats_comp, graph, benchmark):
+        f = benchmark(apl, mple, mle, stats_comp, graph)
+        assert callable(f)
+        assert 0 <= f(graph, mple) <= 1
+        assert 0 <= f(graph, mle) <= 1
