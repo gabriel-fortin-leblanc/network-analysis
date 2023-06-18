@@ -3,22 +3,31 @@ models.
 """
 import random
 import warnings
+from typing import Dict, List, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np
 
+from ..statistics import CachedStatsComp, StatsComp
+
 
 def simulate(
-    ngraphs,
-    param,
-    stats_comp,
-    init,
-    burnin=0,
-    thin=1,
-    summary=False,
-    warn=None,
-    return_statscomp=False,
-):
+    ngraphs: int,
+    param: np.ndarray,
+    stats_comp: callable,
+    init: Union[nx.Graph, int],
+    burnin: int = 0,
+    thin: int = 1,
+    summary: bool = False,
+    warn: Optional[int] = None,
+    return_statscomp: bool = False,
+) -> Union[
+    List[nx.Graph],
+    Tuple[List[nx.Graph], StatsComp],
+    Tuple[List[nx.Graph], CachedStatsComp],
+    Tuple[List[nx.Graph], Dict, StatsComp],
+    Tuple[List[nx.Graph], Dict, CachedStatsComp],
+]:
     """Simulate ngraphs graphs with respect to the param and the sufficient
     statistics.
 
@@ -29,7 +38,7 @@ def simulate(
     :param stats_comp: The sufficient statistics computer.
     :type stats_comp: A callable object.
     :param init: The initial graph to start the chain, or the number of nodes.
-    :type init: NetworkX graph., optional
+    :type init: NetworkX graph, optional.
     :param burnin: The number of graphs to burn. If none is given, then no
         graphs will be burned., defaults to None
     :type burnin: int, optional
@@ -41,6 +50,13 @@ def simulate(
     :param warn: If an integer passed, then a warning is thrown if the
         graphs are near-empty or near-complete for this number of interation.
     :type warn: An integer, optional.
+    :param return_statscomp: A flag for requesting to return the sufficient
+        statistics computer. By default, False is given.
+    :type return_statscomp: Boolean.
+    :return: The simulated graphs and the sufficient statistics computer if
+        requested. It also returns the summary if requested.
+    :rtype: A list of NetworkX graphs, and optionally a dictionary and a
+        callable object.
     """
 
     if type(init) is int:

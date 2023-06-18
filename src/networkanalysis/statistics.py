@@ -10,6 +10,26 @@ import networkx as nx
 import numpy as np
 from scipy.special import comb
 
+__all__ = [
+    "NEdges",
+    "GWD",
+    "GWESP",
+    "KStars",
+    "InKStars",
+    "OutKStars",
+    "Mutuals",
+    "n_edges",
+    "gwd",
+    "gwesp",
+    "kstars",
+    "in_kstars",
+    "out_kstars",
+    "mutuals",
+    "stats_transform",
+    "StatsComp",
+    "CachedStatsComp",
+]
+
 
 def gwd(graph: nx.Graph, decay: float) -> float:
     """Compute the geometrically weighted degree of the simple graph.
