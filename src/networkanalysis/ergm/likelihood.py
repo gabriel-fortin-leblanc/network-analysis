@@ -378,7 +378,7 @@ def apl(
         )
         sim_stats = np.array([statscomp(sample) for sample in sim_graphs])
         ratios[i] = np.exp(sim_stats @ ((temp[i + 1] - temp[i]) * mle)).mean()
-    n = karate_graph.number_of_nodes()
+    n = graph.number_of_nodes()
     normconst = ratios.prod() * (2 ** (n * (n - 1) / 2))
 
     # Compute the magnitude adjustment constant.
