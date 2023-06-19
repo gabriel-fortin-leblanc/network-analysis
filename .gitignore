@@ -12,3 +12,7 @@ env/
 
 # Build
 docs/_build/
+
+# Editors config
+.idea/
+.vscode/
