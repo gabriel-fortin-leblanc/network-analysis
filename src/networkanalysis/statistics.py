@@ -18,7 +18,6 @@ __all__ = [
     "InKStars",
     "OutKStars",
     "Mutuals",
-    "n_edges",
     "gwd",
     "gwesp",
     "kstars",
