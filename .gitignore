@@ -11,7 +11,7 @@ src/network_analysis.egg-info/
 env/
 
 # Build
-docs/_build/
+docs/build/
 
 # Editors config
 .idea/
