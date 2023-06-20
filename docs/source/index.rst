@@ -3,18 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Network Analysis's documentation!
-============================================
+Network Analysis
+================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Network Analysis provides a set of statistical tools to analyze networks. It can be seen as a complement `NetworkX <https://networkx.org/>`_, which provides the basic tools to create and manipulate networks.
+
+It contains multiple modules that allow to easily compute some statistics such as the number of :math:`k`-stars or even the geometrically weighted degree, or to compute maximum likelihood estimators of exponential random graph models.
 
 
+API structure
+-------------
 
-Indices and tables
-==================
+.. Describe the API structure here.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
