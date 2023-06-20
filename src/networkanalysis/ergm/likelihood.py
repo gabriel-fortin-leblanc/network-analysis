@@ -1,7 +1,9 @@
 """This module contains functions that compute the maximum likelihood estimator
 or other version of it, like the maximum pseudolikelihood estimator."""
 import itertools
+from typing import Tuple, Union
 
+import networkx as nx
 import numpy as np
 from scipy import optimize, spatial
 from scipy.spatial._qhull import QhullError
@@ -12,7 +14,21 @@ from networkanalysis.ergm.simulate import simulate
 __all__ = ["mpl", "ml", "apl", "pl"]
 
 
-def mpl(graph, statscomp, return_statscomp=False):
+def mpl(
+    graph: nx.Graph, statscomp: callable, return_statscomp: bool = False
+) -> np.ndarray:
+    """Compute the maximum pseudolikelihood estimator.
+
+    :param graph: The graph to compute the estimator.
+    :type graph: nx.Graph
+    :param statscomp: The function that computes the sufficient statistics.
+    :type statscomp: callable
+    :param return_statscomp: Whether to return the function that computes the
+        sufficient statistics. Defaults to False.
+    :type return_statscomp: bool
+    :return: The maximum pseudolikelihood estimator.
+    :rtype: np.ndarray
+    """
     # Create the "data set".
     X = list()
     y = list()
@@ -45,152 +61,47 @@ def mpl(graph, statscomp, return_statscomp=False):
 
 
 def ml(
-    graph,
-    statscomp,
-    init=None,
-    ngraphs=500,
-    burnin=500,
-    thin=5,
-    bound=1e-1,
-    tol=1e-5,
-    maxiter=50,
-    return_statscomp=False,
-):
-    stats = statscomp(graph)
-    param = mpl(graph, statscomp) if init is None else init
+    graph: nx.Graph,
+    statscomp: callable,
+    init: nx.Graph = None,
+    ngraphs: int = 500,
+    burnin: int = 500,
+    thin: int = 5,
+    bound: float = 1e-1,
+    tol: float = 1e-5,
+    maxiter: int = 50,
+    return_statscomp: bool = False,
+) -> np.ndarray:
+    """Compute the maximum likelihood estimator.
 
-    it_in = 0
-    it = 0
-    while it_in < 2 and it < maxiter:
-        it += 1
-
-        hull = None
-        factor = 1
-        while hull is None:
-            sim_graphs, statscomp = simulate(
-                ngraphs,
-                param,
-                statscomp,
-                graph,
-                burnin,
-                thin,
-                return_statscomp=True,
-            )
-            sim_stats = np.array([statscomp(sample) for sample in sim_graphs])
-            sim_stats_mean = sim_stats.mean(0)
-            try:
-                hull = spatial.Delaunay(sim_stats)
-            except QhullError:
-                if factor == 8:
-                    return (
-                        "The algorithm did not converge. "
-                        "The sufficient statistics of the generated "
-                        "graphs are always affinely dependent."
-                    )
-                factor *= 2
-
-        # Find greatest gamma which we have the pseudo-observation in the
-        # convex hull.
-        inf_gamma = 0
-        sup_gamma = 1
-        in_hull = False
-        while sup_gamma - inf_gamma > tol or not in_hull:
-            gamma = (sup_gamma + inf_gamma) / 2
-            pseudostats = gamma * stats + (1 - gamma) * sim_stats_mean
-            in_hull = hull.find_simplex(pseudostats) > 0
-            if in_hull:
-                inf_gamma = gamma
-            else:
-                sup_gamma = gamma
-        gamma = (sup_gamma + inf_gamma) / 2
-        pseudostats = gamma * stats + (1 - gamma) * sim_stats_mean
-
-        param = optimize.minimize(
-            _minus_log_ratio_likelihoods,
-            param,
-            args=(param, pseudostats, sim_stats),
-            jac=_minus_gradient_log_ratio_likelihoods,
-            bounds=optimize.Bounds(param - bound, param + bound),
-            tol=tol,
-        ).x
-
-        if gamma > 1 - tol:
-            it_in += 1
-        else:
-            it_in = 0
-
-    in_hull = False
-    while not in_hull:
-        sim_graphs, statscomp = simulate(
-            ngraphs,
-            param,
-            statscomp,
-            graph,
-            burnin,
-            thin,
-            return_statscomp=True,
-        )
-        sim_stats = np.array([statscomp(sample) for sample in sim_graphs])
-        try:
-            hull = spatial.Delaunay(sim_stats)
-            in_hull = hull.find_simplex(stats) > 0
-        except QhullError:
-            pass
-
-    param = optimize.minimize(
-        _minus_log_ratio_likelihoods,
-        param,
-        args=(param, stats, sim_stats),
-        jac=_minus_gradient_log_ratio_likelihoods,
-        tol=tol,
-    ).x
-
-    return param, statscomp if return_statscomp else param
-
-
-def apl(
-    mple,
-    mle,
-    statscomp,
-    ngraphs=500,
-    burnin=500,
-    thin=5,
-):
-    # Estimate the variance of sufficient statistics from the distribution
-    # with the MPLE.
-    sim_graphs, statscomp = simulate(
-        ngraphs, mple, statscomp, burnin, thin, return_statscomp=True
-    )
-    sim_stats = np.array([statscomp(sample) for sample in sim_graphs])
-    mple_var = np.var(sim_stats, axis=0)
-
-    # Estimate the variance of sufficient statistics from the distribution
-    # with the MLE.
-    sim_graphs, statscomp = simulate(
-        ngraphs, mle, statscomp, burnin, thin, return_statscomp=True
-    )
-    sim_stats = np.array([statscomp(sample) for sample in sim_graphs])
-    mle_var = np.var(sim_stats, axis=0)
-
-    #
-
-    W = np.linalg.inv(
-        np.linalg.cholesky(np.diag(-mple_var)).T
-    ) @ np.linalg.inv(np.diag(-mle_var))
-
-
-def ml(
-    graph,
-    statscomp,
-    init=None,
-    ngraphs=500,
-    burnin=500,
-    thin=5,
-    bound=1e-1,
-    tol=1e-5,
-    maxiter=50,
-    return_statscomp=False,
-):
+    :param graph: The graph to compute the estimator.
+    :type graph: nx.Graph
+    :param statscomp: The function that computes the sufficient statistics.
+    :type statscomp: callable
+    :param init: The initial parameter to start the optimization. If None, the
+        maximum pseudolikelihood estimator is used. Defaults to None.
+    :type init: np.ndarray, optional
+    :param ngraphs: The number of graphs to use when using simulate. Defaults
+        to 500.
+    :type ngraphs: int, optional
+    :param burnin: The number of graphs to discard when using simulate.
+        Defaults to 500.
+    :type burnin: int, optional
+    :param thin: The thinning parameter when using simulate. Defaults to 5.
+    :type thin: int, optional
+    :param bound: The bound for the optimization. Defaults to 1e-1.
+    :type bound: float, optional
+    :param tol: The tolerance for the optimization. Defaults to 1e-5.
+    :type tol: float, optional
+    :param maxiter: The maximum number of iterations for the current two-phases
+        algorithm.
+    :type maxiter: int, optional
+    :param return_statscomp: Whether to return the function that computes the
+        sufficient statistics. Defaults to False.
+    :type return_statscomp: bool, optional
+    :return: The maximum likelihood estimator.
+    :rtype: np.ndarray
+    """
     stats = statscomp(graph)
     if init is None:
         param, statscomp = mpl(graph, statscomp, return_statscomp=True)
@@ -294,7 +205,27 @@ def ml(
         return param
 
 
-def pl(graph, param, statscomp, return_statscomp=False):
+def pl(
+    graph: nx.Graph,
+    param: np.ndarray,
+    statscomp: callable,
+    return_statscomp: bool = False,
+) -> Union[float, Tuple[float, callable]]:
+    """Compute the pseudolikelihood of a graph.
+
+    :param graph: The graph.
+    :type graph: nx.Graph
+    :param param: The parameter.
+    :type param: np.ndarray
+    :param statscomp: The function that computes the sufficient statistics.
+    :type statscomp: callable
+    :param return_statscomp: Whether to return the function that computes the
+        sufficient statistics. Defaults to False.
+    :type return_statscomp: bool, optional
+    :return: The pseudolikelihood of the graph. If return_statscomp is True,
+        then a tuple is returned with the pseudolikelihood and the function
+    :rtype: Union[float, Tuple[float, callable]]
+    """
     stats = statscomp(graph)
     logmarglik = 0
     for u, v in itertools.combinations(graph.nodes(), 2):
@@ -319,15 +250,40 @@ def pl(graph, param, statscomp, return_statscomp=False):
 
 
 def apl(
-    mple,
-    mle,
-    statscomp,
-    graph,
-    ngraphs=500,
-    burnin=500,
-    thin=5,
+    mple: np.ndarray,
+    mle: np.ndarray,
+    statscomp: callable,
+    graph: nx.Graph,
+    ngraphs: int = 500,
+    burnin: int = 500,
+    thin: int = 5,
     return_statscomp=False,
-):
+) -> Union[float, Tuple[float, callable]]:
+    """Compute the adjusted pseudolikelihood function of a graph.
+
+    :param mple: The MPLE.
+    :type mple: Numpy array
+    :param mle: The MLE.
+    :type mle: Numpy array
+    :param statscomp: The function that computes the sufficient statistics.
+    :type statscomp: Callable
+    :param graph: The graph.
+    :type graph: Networkx Graph
+    :param ngraphs: The number of graphs to simulate. Defaults to 500.
+    :type ngraphs: Integer, optional
+    :param burnin: The number of iterations to discard. Defaults to 500.
+    :type burnin: Integer, optional
+    :param thin: The thinning parameter. Defaults to 5.
+    :type thin: Integer, optional
+    :param return_statscomp: Whether to return the function that computes the
+        sufficient statistics. Defaults to False.
+    :type return_statscomp: Boolean, optional
+    :return: The adjusted pseudolikelihood function of the graph. If
+        return_statscomp is True, then a tuple is returned with the adjusted
+        pseudolikelihood and the function that computes the sufficient
+        statistics.
+    :rtype: float or Tuple[float, callable]
+    """
     # Compute the variance of the sufficient statistics for the MLE and the
     # MPLE.
     sim_graphs, statscomp = simulate(
