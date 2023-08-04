@@ -1,10 +1,10 @@
 # Network Analysis <!-- omit in toc -->
 
-Network Analysis provides different tools for statistical network analysis. It is available for download on PyPI under the name `network-analysis` for Python 3. It is implemented in Python using different well known packages such as NetworkX for the manipulations of graphs and Scipy for some optimisations or spatial operations.
+Network Analysis provides different tools for statistical network analysis. It is available for download on PyPI under the name `network-analysis` for Python 3. It is implemented in Python using different well-known packages such as NetworkX for the manipulations of graphs and Scipy for some optimizations or spatial operations.
 
 Multiple statistics can be readily computed on any graphs, rather oriented or not. Also, a full of tools for exponential random graph models are available under the module `ergm` such as functions for simulating random graphs, computing the maximum likelihood estimator, getting the adjusted pseudolikelihood function, or even estimating the posterior density function from Gaussian estimation.
 
-**Note:** The commands in this file are written for Linux system. If you are using Windows, replace `python3` by `py`. Also, if you are using a virtual environment, you may need to replace `python3` by `python`.
+**Note:** The commands in this file are written for Linux systems. If you are using Windows, replace `python3` by `py`. Also, if you are using a virtual environment, you may need to replace `python3` by `python`.
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -41,11 +41,11 @@ This documentation will suppose that you are aware of the basics of Python and t
 The package Network Analysis is composed of different modules, each one containing different functions. The main modules are:
 
 - `network.statistics` for the computation of different statistics on graphs;
-- `network.ergm` which contains multiple submodules for analysing exponential random graph models.
+- `network.ergm` which contains multiple submodules for analyzing exponential random graph models.
 
 ### Statistics
 
-To use the package, you first need to import it the specific modules you wants to use. For example, if you want to compute the geometrically weighted degree of a graph, you can use the following command:
+To use the package, you first need to import the specific modules you want to use. For example, if you want to compute the geometrically weighted degree of a graph, you can use the following command:
 
 ```python
 from network-analysis import statistics as stat
@@ -58,7 +58,7 @@ G.add_edges_from([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)])
 stat.gwd(G)
 ```
 
-You can also create a function that computes a list of sufficient statistics relative to your application. Let say we want the sufficient statistics function for a two-star model, which is the number of edges, and the number of path of length 2. We can create the following function:
+You can also create a function that computes a list of sufficient statistics relative to your application. Let us say we want the sufficient statistics function for a two-star model, which is the number of edges, and the number of paths of length 2. We can create the following function:
 
 ```python
 ss = stat.StatsComp([ # For Statistics Computer
@@ -73,7 +73,7 @@ and then simply use it on a graph:
 ss(G)
 ```
 
-**Note:** For each statistics function, such as `gwd` or `mutuals`, that `network-analysis.statistics` contains, it exists a class that does the same thing, but that can be used in a `StatsComp` object. It allow you to specify once and for all some parameters, such as the number of stars for `KStars`, and then use it on any graph.
+**Note:** For each statistics function, such as `gwd` or `mutuals`, that `network-analysis.statistics` contains, it exists a class that does the same thing, but that can be used in a `StatsComp` object. It allows you to specify once and for all some parameters, such as the number of stars for `KStars`, and then use it on any graph.
 
 ### Exponential Random Graph Models
 
@@ -102,7 +102,7 @@ Suppose now that you observed a graph `G` and you want to compute the maximum li
 ergm.ml(G, ss)
 ```
 
-The submodule `ergm.likelihood` contains multiple functions such as `ml` that can be used to compute the maximum likelihood estimator, `mpl` that compute the maximum pseudolikelihood, or `apl` for getting the adjusted pseudolikelihood function. For more information, you can refer to the documentation.
+The submodule `ergm.likelihood` contains multiple functions such as `ml` that can be used to compute the maximum likelihood estimator, `mpl` that computes the maximum pseudolikelihood, or `apl` for getting the adjusted pseudolikelihood function. For more information, you can refer to the documentation.
 
 ## Documentation
 
@@ -114,7 +114,7 @@ The license of the package Network Analysis is GNU General Public License v3.0. 
 
 ## Credits
 
-The package Network Analysis is maintened by [Gabriel Fortin-Leblanc](https://github.com/gabriel-fortin-leblanc).
+The package Network Analysis is maintained by [Gabriel Fortin-Leblanc](https://github.com/gabriel-fortin-leblanc).
 
 ## Contact
 
