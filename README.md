@@ -115,8 +115,16 @@ The license of the package Network Analysis is GNU General Public License v3.0. 
 
 ## Contributing
 
+Before contributing to the project, please read the [CODE OF CONDUCT](CODE_OF_CONDUCT.md). A guide for contributing will be soon available.
+
 ## Credits
+
+The package Network Analysis is maintened by [Gabriel Fortin-Leblanc](https://github.com/gabriel-fortin-leblanc).
 
 ## Contact
 
+If you have any question, you can contact me at [gabrielfortinleblanc@gmail.com](mailto:gabrielfortinleblanc@gmail.com).
+
 ## References
+
+The references of the package Network Analysis will be soon available.
