@@ -14,7 +14,6 @@ Multiple statistics can be readily computed on any graphs, rather oriented or no
   - [Exponential Random Graph Models](#exponential-random-graph-models)
 - [Documentation](#documentation)
 - [License](#license)
-- [Contributing](#contributing)
 - [Credits](#credits)
 - [Contact](#contact)
 - [References](#references)
@@ -107,15 +106,11 @@ The submodule `ergm.likelihood` contains multiple functions such as `ml` that ca
 
 ## Documentation
 
-The documentation of the package Network Analysis will be soon available on Read the Docs.
+The documentation of the package Network Analysis will be soon available.
 
 ## License
 
 The license of the package Network Analysis is GNU General Public License v3.0. You can find more information on the [official website](https://www.gnu.org/licenses/gpl-3.0.en.html). The license of the package is also available in the file `LICENSE` at the root of the project.
-
-## Contributing
-
-Before contributing to the project, please read the [CODE OF CONDUCT](CODE_OF_CONDUCT.md). A guide for contributing will be soon available.
 
 ## Credits
 
