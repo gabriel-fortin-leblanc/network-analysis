@@ -33,7 +33,8 @@ def simulate(
     """Simulate ngraphs graphs with respect to the param and the sufficient
     statistics.
 
-    :param int ngraphs: The number of graphs to simulate.
+    :param ngraphs: The number of graphs to simulate.
+    :type ngraphs: int
     :param param: The parameter of the model.
     :type param: ~numpy.ndarray
     :param stats_comp: The sufficient statistics computer.
