@@ -40,20 +40,22 @@ def simulate(
     :param stats_comp: The sufficient statistics computer.
     :type stats_comp: StatsComp | CachedStatsComp
     :param init: The initial graph to start the chain, or the number of nodes.
+        If none is given, then a random graph is used.
     :type init: ~networkx.Graph, optional
     :param burnin: The number of graphs to burn. If none is given, then no
-        graphs will be burned., defaults to None
+        graphs will be burned. Defaults to `0`.
     :type burnin: int, optional
-    :param thin: The thinning factor. By default, None is given.
+    :param thin: The thinning factor. Defaults to `1`.
     :type thin: int, optional
     :param summary: A flag for requesting to collect information about the
-        chain such as the acceptance rate. By default, False is given.
+        chain such as the acceptance rate. Defaults to `False`.
     :type summary: bool, optional
     :param warn: If an integer passed, then a warning is thrown if the
         graphs are near-empty or near-complete for this number of interation.
+        Defaults to `None`.
     :type warn: int, optional
     :param return_statscomp: A flag for requesting to return the sufficient
-        statistics computer. By default, False is given.
+        statistics computer. Defaults to `False`.
     :type return_statscomp: bool, optional
     :return:
         - The simulated graphs.
