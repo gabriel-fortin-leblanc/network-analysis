@@ -3,8 +3,7 @@ dist/
 src/network_analysis.egg-info/
 
 # Cache
-*/__pycache__/
-*/*/__pycache__/
+**/__pycache__/
 .tox/
 
 # Python environment
