@@ -11,6 +11,7 @@ env/
 
 # Build
 docs/build/
+docs/source/generated/
 
 # Editors config
 .idea/
