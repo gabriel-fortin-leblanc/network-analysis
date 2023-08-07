@@ -74,6 +74,6 @@ autodoc_default_options = {
     "imported-members": True,
 }
 autodoc_class_signature = "separated"
-autodoc_typehints = "signature"
+autodoc_typehints = "description"
 autodoc_typehints_description_target = "all"
 autosummary_imported_members = True
