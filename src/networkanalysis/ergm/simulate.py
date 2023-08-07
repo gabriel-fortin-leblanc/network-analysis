@@ -1,66 +1,71 @@
 """This module is used to simulate graphs from a exponential random graph
 models.
 """
+from __future__ import annotations
+
 import random
 import warnings
-from typing import Dict, List, Optional, Tuple, Union
 
-import networkx as nx
-import numpy as np
+import networkx
+import numpy
 
 from ..statistics import CachedStatsComp, StatsComp
+
+__all__ = ["simulate"]
 
 
 def simulate(
     ngraphs: int,
-    param: np.ndarray,
-    stats_comp: callable,
-    init: Union[nx.Graph, int],
+    param: numpy.ndarray,
+    stats_comp: StatsComp | CachedStatsComp,
+    init: networkx.Graph | int,
     burnin: int = 0,
     thin: int = 1,
     summary: bool = False,
-    warn: Optional[int] = None,
+    warn: int = None,
     return_statscomp: bool = False,
-) -> Union[
-    List[nx.Graph],
-    Tuple[List[nx.Graph], StatsComp],
-    Tuple[List[nx.Graph], CachedStatsComp],
-    Tuple[List[nx.Graph], Dict, StatsComp],
-    Tuple[List[nx.Graph], Dict, CachedStatsComp],
-]:
+) -> (
+    list[networkx.Graph]
+    | tuple[list[networkx.Graph], StatsComp]
+    | tuple[list[networkx.Graph], CachedStatsComp]
+    | tuple[list[networkx.Graph], dict, StatsComp | CachedStatsComp]
+):
     """Simulate ngraphs graphs with respect to the param and the sufficient
     statistics.
 
     :param ngraphs: The number of graphs to simulate.
-    :type ngraphs: Integer.
+    :type ngraphs: int
     :param param: The parameter of the model.
-    :type param: Numpy array.
+    :type param: ~numpy.ndarray
     :param stats_comp: The sufficient statistics computer.
-    :type stats_comp: A callable object.
+    :type stats_comp: StatsComp | CachedStatsComp
     :param init: The initial graph to start the chain, or the number of nodes.
-    :type init: NetworkX graph, optional.
+        If none is given, then a random graph is used.
+    :type init: ~networkx.Graph, optional
     :param burnin: The number of graphs to burn. If none is given, then no
-        graphs will be burned., defaults to None
+        graphs will be burned. Defaults to `0`.
     :type burnin: int, optional
-    :param thin: The thinning factor. By default, None is given.
-    :type thin: int, optional.
+    :param thin: The thinning factor. Defaults to `1`.
+    :type thin: int, optional
     :param summary: A flag for requesting to collect information about the
-        chain such as the acceptance rate. By default, False is given.
-    :type summary: Boolean.
+        chain such as the acceptance rate. Defaults to `False`.
+    :type summary: bool, optional
     :param warn: If an integer passed, then a warning is thrown if the
         graphs are near-empty or near-complete for this number of interation.
-    :type warn: An integer, optional.
+        Defaults to `None`.
+    :type warn: int, optional
     :param return_statscomp: A flag for requesting to return the sufficient
-        statistics computer. By default, False is given.
-    :type return_statscomp: Boolean.
-    :return: The simulated graphs and the sufficient statistics computer if
-        requested. It also returns the summary if requested.
-    :rtype: A list of NetworkX graphs, and optionally a dictionary and a
-        callable object.
+        statistics computer. Defaults to `False`.
+    :type return_statscomp: bool, optional
+    :return:
+        - The simulated graphs.
+        - A summary of the Markov chain used if `summary` is `True`.
+        - The statistics computer if `return_statistics` is `True`.
+    :rtype: tuple[list[~networkx.Graph], dict, StatsComp | CachedStatsComp]
     """
 
     if type(init) is int:
-        peek = nx.random_graphs.binomial_graph(init, 0.5)
+        peek = networkx.random_graphs.binomial_graph(init, 0.5)
     else:
         peek = init.copy()
     peek_stats = stats_comp(peek)
@@ -75,7 +80,7 @@ def simulate(
         ndyadslim = n * (n - 1) / 2 - 1
 
     nits = burnin + thin * ngraphs
-    logunifs = np.log(np.random.uniform(size=nits))
+    logunifs = numpy.log(numpy.random.uniform(size=nits))
     graphs = [None] * nits
 
     for i in range(nits):
