@@ -90,7 +90,7 @@ def kstars(graph: networkx.Graph, k: int) -> int:
     :rtype: int
     """
     degrees = numpy.array([d for _, d in graph.degree()])
-    return collections.comb(degrees, k).sum()
+    return special.comb(degrees, k).sum()
 
 
 def in_kstars(graph: networkx.DiGraph, k: int) -> int:
