@@ -1,5 +1,23 @@
 """This module contains classes and functions to compute statistics on
 networks.
+
+.. [1]
+    Snijders, T. A. B., Pattison, P. E., Robins, G. L., & Handcock, M. S.
+    (2006). New Specifications for Exponential Random Graph Models.
+    Sociological Methodology, 36(1), 99-153.
+    https://doi.org/10.1111/j.1467-9531.2006.00176.x
+
+.. [2]
+    Hunter, D. R., & Handcock, M. S. (2006). Inference in Curved
+    Exponential Family Models for Networks. Journal of Computational and
+    Graphical Statistics, 15(3), 565-583.
+    https://doi.org/10.1198/106186006X133069
+
+.. [3]
+    Frank, O., & Strauss, D. (1986). Markov Graphs. Journal of the American
+    Statistical Association, 81(395), 832-842.
+    https://doi.org/10.1080/01621459.1986.10478342 
+
 """
 from __future__ import annotations
 
@@ -38,7 +56,7 @@ Graph2StatsArray = collections.abc.Callable[
 
 
 def gwd(graph: networkx.Graph, decay: float) -> float:
-    """Compute the geometrically weighted degree of the simple graph. [1]_
+    """Compute the geometrically weighted degree [1]_ of the simple graph.
 
     :param graph: The graph.
     :type graph: ~networkx.Graph
@@ -46,13 +64,6 @@ def gwd(graph: networkx.Graph, decay: float) -> float:
     :type decay: float
     :return: The geometrically weighted degree.
     :rtype: float
-
-    .. [1]
-        Snijders, T. A. B., Pattison, P. E., Robins, G. L., & Handcock, M. S.
-        (2006). New Specifications for Exponential Random Graph Models.
-        Sociological Methodology, 36(1), 99-153.
-        https://doi.org/10.1111/j.1467-9531.2006.00176.x
-
     """
     degrees = numpy.array([d for _, d in graph.degree()])
     uniques, counts = numpy.unique(degrees, return_counts=True)
@@ -61,7 +72,7 @@ def gwd(graph: networkx.Graph, decay: float) -> float:
 
 
 def gwesp(graph: networkx.Graph, decay: float) -> float:
-    """Compute the geometrically weighted edgewise shared partners of the
+    """Compute the geometrically weighted edgewise shared partners [2]_ of the
     graph.
 
     :param graph: The graph.
@@ -84,7 +95,7 @@ def gwesp(graph: networkx.Graph, decay: float) -> float:
 
 
 def kstars(graph: networkx.Graph, k: int) -> int:
-    """Count the number of k-stars of the undirected graph.
+    """Count the number of k-stars [3]_ of the undirected graph.
 
     :param graph: The graph.
     :type graph: ~networkx.Graph
@@ -98,8 +109,8 @@ def kstars(graph: networkx.Graph, k: int) -> int:
 
 
 def in_kstars(graph: networkx.DiGraph, k: int) -> int:
-    """Count the number of in k-stars of the directed graph. An in k-star in
-    composed of arcs pointing towards its center.
+    """Count the number of in k-stars [3]_ of the directed graph. An in k-star
+    in composed of arcs pointing towards its center.
 
     :param graph: The graph.
     :type graph: ~networkx.DiGraph
@@ -113,8 +124,8 @@ def in_kstars(graph: networkx.DiGraph, k: int) -> int:
 
 
 def out_kstars(graph: networkx.DiGraph, k: int) -> int:
-    """Count the number of out k-stars of the directed graph. An out k-star in
-    composed of arcs pointing towards its border.
+    """Count the number of out k-stars [3]_ of the directed graph. An out
+    k-star in composed of arcs pointing towards its border.
 
     :param graph: The graph.
     :type graph: ~networkx.DiGraph
@@ -247,9 +258,9 @@ def stats_transform(stats: SeqGraph2Stats) -> Graph2StatsArray:
     :type stats: SeqGraph2Stats
     :return: A callable object that takes a NetworkX graph as argument and
         returns a vector of statistics.
-    :rtype: collections.abc.Callable[
-        [networkx.Graph | networkx.DiGraph],
-        numpy.ndarray]
+    :rtype: ~collections.abc.Callable[
+        [~networkx.Graph | ~networkx.DiGraph],
+        ~numpy.ndarray]
     """
 
     # Build the function that computes the vector of statistics from the list.
