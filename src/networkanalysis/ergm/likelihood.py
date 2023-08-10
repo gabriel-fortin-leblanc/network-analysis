@@ -22,7 +22,8 @@ def mpl(
     statscomp: StatsComp | CachedStatsComp,
     return_statscomp: bool = False,
 ) -> numpy.ndarray:
-    """Compute the maximum pseudolikelihood estimator.
+    """Compute the maximum pseudolikelihood estimator using the method
+    presented in [1]_.
 
     :param graph: The observed graph.
     :type graph: ~networkx.Graph
