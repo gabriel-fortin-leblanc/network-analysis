@@ -30,7 +30,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
 ]
-
 templates_path = ["_templates"]
 exclude_patterns = []
 
@@ -39,20 +38,32 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_title = "Network Analysis"
-html_theme = "sphinx_book_theme"
+html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 
 html_theme_options = {
-    "repository_url": "https://github.com/gabriel-fortin-leblanc/network-analysis",
     # Header
-    "use_repository_button": True,
-    "use_issues_button": True,
     "logo": {
         "text": "Network Analysis",
     },
-    "navbar_start": ["navbar-logo", "navbar-nav"],
+    "use_edit_page_button": True,
+    "navbar_start": ["navbar-logo"],
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/gabriel-fortin-leblanc/network-analysis",
+            "icon": "fa-brands fa-square-github",
+            "type": "fontawesome",
+        },
+    ],
     # Primary sidebar (left sidebar)
     "primary_sidebar_end": ["sidebar-ethical-ads"],
+}
+html_context = {
+    "github_user": "gabriel-fortin-leblanc",
+    "github_repo": "network-analysis",
+    "github_version": "main",
+    "doc_path": "docs/source",
 }
 html_sidebars = {
     "**": [
