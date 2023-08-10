@@ -30,18 +30,15 @@ __all__ = [
 
 # Aliases
 SeqGraph2Stats = list[
-    collections.abc.Callable[
-        [networkx.Graph | networkx.DiGraph],
-        float | int]
+    collections.abc.Callable[[networkx.Graph | networkx.DiGraph], float | int]
 ]
 Graph2StatsArray = collections.abc.Callable[
-    [networkx.Graph | networkx.DiGraph], 
-    numpy.ndarray
+    [networkx.Graph | networkx.DiGraph], numpy.ndarray
 ]
 
 
 def gwd(graph: networkx.Graph, decay: float) -> float:
-    """Compute the geometrically weighted degree of the simple graph.
+    """Compute the geometrically weighted degree of the simple graph. [1]_
 
     :param graph: The graph.
     :type graph: ~networkx.Graph
@@ -49,6 +46,13 @@ def gwd(graph: networkx.Graph, decay: float) -> float:
     :type decay: float
     :return: The geometrically weighted degree.
     :rtype: float
+
+    .. [1]
+        Snijders, T. A. B., Pattison, P. E., Robins, G. L., & Handcock, M. S.
+        (2006). New Specifications for Exponential Random Graph Models.
+        Sociological Methodology, 36(1), 99-153.
+        https://doi.org/10.1111/j.1467-9531.2006.00176.x
+
     """
     degrees = numpy.array([d for _, d in graph.degree()])
     uniques, counts = numpy.unique(degrees, return_counts=True)
@@ -172,7 +176,7 @@ class GWESP:
 
     def __init__(self, decay: float):
         """Initializa a callable object that mimics :py:func:`gwesp`.
-        
+
         :param decay: The decay parameter.
         :type decay: float
         """
@@ -244,7 +248,7 @@ def stats_transform(stats: SeqGraph2Stats) -> Graph2StatsArray:
     :return: A callable object that takes a NetworkX graph as argument and
         returns a vector of statistics.
     :rtype: collections.abc.Callable[
-        [networkx.Graph | networkx.DiGraph], 
+        [networkx.Graph | networkx.DiGraph],
         numpy.ndarray]
     """
 
@@ -304,8 +308,8 @@ class CachedStatsComp(StatsComp):
             argument. It also accepts another StatsComp object or even a
             CachedStatsComp object and copy it.
         :type stats: list[
-            collections.abc.Callable[
-            [networkx.Graph | networkx.DiGraph],
+            ~collections.abc.Callable[
+            [~networkx.Graph | ~networkx.DiGraph],
             float | int]
             ] | StatsComp | CachedStatsComp
         :param max_size: Maximum number of graphs to cache.
